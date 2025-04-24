@@ -79,4 +79,19 @@ export const deleteFile = async (filename) => {
   }
 };
 
+export const renameFile = async (oldName, newName) => {
+  try {
+    const token = getToken();
+    const response = await api.put(`/files/rename`, { oldName, newName }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return (await response).data;
+  } catch (error) {
+    console.error("Error renaming file:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export default api;

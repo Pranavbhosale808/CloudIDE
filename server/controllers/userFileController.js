@@ -2,9 +2,46 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import multer from 'multer';
+import { generateFileTree, readFileContent, writeFileContent } from '../models/fileModel.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const basePath = (req) => `${process.cwd()}/user/${req.header('username')}`;
+const upload = multer({ dest: 'uploads/' }); 
+
+
+export const getFileTree = async (req, res) => {
+  try {
+    const fileTree = await generateFileTree(basePath(req));
+    res.json({ tree: fileTree });
+  } catch (error) {
+    res.status(500).json({ message: 'Error generating file tree', error: error.message });
+  }
+};
+
+export const fetchFileContent = async (req, res) => {
+  const filepath = req.query.path;
+  try {
+    const fullPath = path.join(basePath(req), filepath);
+    const content = await readFileContent(fullPath);  
+    res.json({ content });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching file content', error: error.message });
+  }
+}
+
+export const saveFileContent = async (req, res) => {
+  const { path, content } = req.body;
+  try {
+    const fullpath = path.join(basePath(req), path);
+    await writeFileContent(fullpath, content);
+    res.json({ message: 'File saved successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving file', error: error.message });
+  }
+}
 
 export async function getUserFiles(req, res) {
   const username = req.user.username;
