@@ -4,7 +4,6 @@ import { generateFileTree, readFileContent, writeFileContent } from '../models/f
 import { getUserFiles,createFile, deleteFile,renameFile,createDirectory,uploadFile, } from '../controllers/userFileController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 import multer from 'multer';
-import { log } from 'console';
 
 
 
